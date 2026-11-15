@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react'
 import { produtos } from './data/produtos'
 import ProductCard from './components/ProductCard'
 import Cart from './components/Cart'
+import ProductPreview from './components/ProductPreview'
 
 export default function App() {
   const [tema, setTema] = useState(() => {
-    const temaSalvo = localStorage.getItem('tema')
-    if (temaSalvo === 'light' || temaSalvo === 'dark') return temaSalvo
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+    const temaSalvo = localStorage.getItem('nexus-theme')
+    return temaSalvo === 'light' ? 'light' : 'dark'
   })
   const [categoriaSelecionada, setCategoriaSelecionada] = useState('Todas')
   const [faixaPreco, setFaixaPreco] = useState('todas')
@@ -16,10 +16,11 @@ export default function App() {
   const [aberto, setAberto] = useState(false)
   const [concluida, setConcluida] = useState(false)
   const [perfilAberto, setPerfilAberto] = useState(false)
+  const [produtoPreview, setProdutoPreview] = useState(null)
 
   useEffect(() => {
     document.documentElement.dataset.theme = tema
-    localStorage.setItem('tema', tema)
+    localStorage.setItem('nexus-theme', tema)
   }, [tema])
 
   const categorias = [...new Set(produtos.map((produto) => produto.categoria))]
@@ -73,7 +74,7 @@ export default function App() {
           >
             👤
           </button>
-          <h1>🛍️ Loja React</h1>
+          <h1><span>⚡</span> NEXUS <b>TECH</b></h1>
         </div>
         <div className="header-actions">
           <button
@@ -95,6 +96,24 @@ export default function App() {
         </div>
       </header>
 
+      <section className="hero">
+        <div className="hero-copy">
+          <p className="hero-kicker"><span /> EQUIPAMENTO DE ELITE <b>•</b> EDIÇÃO 2026</p>
+          <h2>VÁ ALÉM<br /><em>DO LIMITE.</em></h2>
+          <p className="hero-description">
+            Hardware real para quem joga, cria e não aceita ficar para trás.
+          </p>
+          <a className="hero-link" href="#catalogo">EXPLORAR O ARSENAL <span>↘</span></a>
+        </div>
+        <div className="hero-art" aria-hidden="true">
+          <div className="hero-ring" />
+          <div className="hero-emblem">N<span>/</span>T</div>
+          <div className="hero-coordinate">LAT 37° 33' 59.4" N<br />NEXT LEVEL // 2026</div>
+          <div className="hero-stripe" />
+        </div>
+        <div className="hero-side-label">NEXUS / PERFORMANCE DIVISION</div>
+      </section>
+
       {perfilAberto && (
         <aside className="profile-panel" aria-label="Perfil demonstrativo">
           <div className="profile-heading">
@@ -114,11 +133,12 @@ export default function App() {
         </aside>
       )}
 
-      <section className="catalog-tools" aria-label="Filtros do catálogo">
+      <section id="catalogo" className="catalog-tools" aria-label="Filtros do catálogo">
         <div className="catalog-heading">
           <div>
-            <h2>Nosso catálogo</h2>
-            <p>Encontre o produto ideal para você.</p>
+            <span className="section-index">01 / CATÁLOGO</span>
+            <h2>ARSENAL DE TECNOLOGIA</h2>
+            <p>Seleção de hardware, consoles e periféricos de verdade.</p>
           </div>
           <span className="results-count">
             {produtosVisiveis.length} {produtosVisiveis.length === 1 ? 'produto' : 'produtos'}
@@ -160,7 +180,12 @@ export default function App() {
       <main className="grid">
         {produtosVisiveis.length > 0 ? (
           produtosVisiveis.map((produto) => (
-            <ProductCard key={produto.id} produto={produto} onAdd={adicionar} />
+            <ProductCard
+              key={produto.id}
+              produto={produto}
+              onAdd={adicionar}
+              onPreview={setProdutoPreview}
+            />
           ))
         ) : (
           <p className="no-results">Nenhum produto encontrado com esses filtros.</p>
@@ -178,6 +203,13 @@ export default function App() {
             setConcluida(true)
             setCarrinho([])
           }}
+        />
+      )}
+      {produtoPreview && (
+        <ProductPreview
+          produto={produtoPreview}
+          onClose={() => setProdutoPreview(null)}
+          onAdd={adicionar}
         />
       )}
     </>

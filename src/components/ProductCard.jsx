@@ -1,17 +1,19 @@
 import { useState } from 'react'
 import { moeda } from '../utils'
 
-export default function ProductCard({ produto, onAdd }) {
+export default function ProductCard({ produto, onAdd, onPreview }) {
   const [qtd, setQtd] = useState(0)
 
   return (
     <article className="card">
       <div className="img" style={{ background: produto.cor }}>
-        {produto.imagem ? <img src={produto.imagem} alt={produto.nome} /> : produto.emoji}
+        <img src={produto.imagem} alt={produto.nome} loading="lazy" decoding="async" />
+        <span className="card-id">Nº {String(produto.id).padStart(2, '0')}</span>
       </div>
       <div className="info">
         <span className="category-tag">{produto.categoria}</span>
         <h3>{produto.nome}</h3>
+        <p className="card-description">{produto.descricao}</p>
         <div className="price">{moeda(produto.preco)}</div>
         <div className="qty">
           <button
@@ -32,6 +34,9 @@ export default function ProductCard({ produto, onAdd }) {
           }}
         >
           {qtd === 0 ? 'Escolha a quantidade' : 'Adicionar ao carrinho'}
+        </button>
+        <button className="preview-btn" onClick={() => onPreview(produto)}>
+          VER ESPECIFICAÇÕES <span>↗</span>
         </button>
       </div>
     </article>
