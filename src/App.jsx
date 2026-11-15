@@ -1,12 +1,22 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { produtos } from './data/produtos'
 import ProductCard from './components/ProductCard'
 import Cart from './components/Cart'
 
 export default function App() {
+  const [tema, setTema] = useState(() => {
+    const temaSalvo = localStorage.getItem('tema')
+    if (temaSalvo === 'light' || temaSalvo === 'dark') return temaSalvo
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  })
   const [carrinho, setCarrinho] = useState([])
   const [aberto, setAberto] = useState(false)
   const [concluida, setConcluida] = useState(false)
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = tema
+    localStorage.setItem('tema', tema)
+  }, [tema])
 
   const adicionar = (produto, qtd) =>
     setCarrinho((c) =>
@@ -22,15 +32,24 @@ export default function App() {
     <>
       <header>
         <h1>🛍️ Loja React</h1>
-        <button
-          className="cartbtn"
-          onClick={() => {
-            setConcluida(false)
-            setAberto(true)
-          }}
-        >
-          🛒 Carrinho ({total})
-        </button>
+        <div className="header-actions">
+          <button
+            className="themebtn"
+            onClick={() => setTema((atual) => (atual === 'dark' ? 'light' : 'dark'))}
+            aria-pressed={tema === 'dark'}
+          >
+            {tema === 'dark' ? '☀️ Tema claro' : '🌙 Tema escuro'}
+          </button>
+          <button
+            className="cartbtn"
+            onClick={() => {
+              setConcluida(false)
+              setAberto(true)
+            }}
+          >
+            🛒 Carrinho ({total})
+          </button>
+        </div>
       </header>
 
       <main className="grid">
